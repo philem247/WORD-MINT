@@ -83,15 +83,13 @@ export default function GamePanel({}: GamePanelProps) {
     }
 
     setIsClaimingReward(true);
-    setRewardMessage("⏳ Claiming reward...");
+    setRewardMessage("⏳ Processing...");
 
     try {
-      // Use client-side minting instead of API call
-      const signature = await mintRewardToWallet({ publicKey });
-
-      setRewardMessage(`✅ 1 $WORD token minted successfully! View transaction: https://explorer.solana.com/tx/${signature}?cluster=devnet`);
+      // Show coming soon message instead of minting
+      setRewardMessage("🚀 $WORD token is coming soon! Stay tuned for updates.");
     } catch (error) {
-      setRewardMessage(`❌ Failed to claim reward: ${error instanceof Error ? error.message : "Unknown error"}`);
+      setRewardMessage("❌ Something went wrong. Please try again later.");
     } finally {
       setIsClaimingReward(false);
     }
