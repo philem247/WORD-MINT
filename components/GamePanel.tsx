@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { mintRewardToWallet } from "../lib/solana";
 import WORD_BANK from "../data/words.json";
 import Confetti from "react-confetti";
 
@@ -85,19 +86,10 @@ export default function GamePanel({}: GamePanelProps) {
     setRewardMessage("⏳ Claiming reward...");
 
     try {
-      const response = await fetch("/api/reward", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ wallet: publicKey.toBase58() })
-      });
+      // Use client-side minting instead of API call
+      const signature = await mintRewardToWallet({ publicKey });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setRewardMessage(`✅ ${data.message} View transaction: ${data.txUrl}`);
-      } else {
-        setRewardMessage(`❌ ${data.error}: ${data.details || ""}`);
-      }
+      setRewardMessage(`✅ 1 $WORD token minted successfully! View transaction: https://explorer.solana.com/tx/${signature}?cluster=devnet`);
     } catch (error) {
       setRewardMessage(`❌ Failed to claim reward: ${error instanceof Error ? error.message : "Unknown error"}`);
     } finally {
