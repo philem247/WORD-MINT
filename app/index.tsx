@@ -153,8 +153,8 @@ export default function Home() {
       const data = await resp.json();
       if (!resp.ok) throw new Error(data.error || "Reward failed");
       setFeedback(`🎉 Reward sent! Tx: ${data.signature}`);
-    } catch (e: any) {
-      setFeedback(`Reward error: ${e.message}`);
+    } catch (e: unknown) {
+      setFeedback(`Reward error: ${e instanceof Error ? e.message : String(e)}`);
     }
   }
 

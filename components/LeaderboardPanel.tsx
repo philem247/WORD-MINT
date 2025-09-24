@@ -25,8 +25,8 @@ const LeaderboardPanel = () => {
         if (!res.ok) throw new Error("Failed to fetch leaderboard");
         const data: LeaderboardEntry[] = await res.json();
         setLeaderboard(data.sort((a, b) => b.score - a.score));
-      } catch (err: any) {
-        setError(err.message || "Unknown error");
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "Unknown error");
       } finally {
         setLoading(false);
       }

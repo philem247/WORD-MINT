@@ -1,13 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import WORD_BANK from "../data/words.json";
 import Confetti from "react-confetti";
-import { sendWordReward } from "../lib/solana";
 
-type GamePanelProps = {};
+type GamePanelProps = Record<string, never>;
 
 export default function GamePanel({}: GamePanelProps) {
   const { publicKey } = useWallet();
@@ -22,13 +20,7 @@ export default function GamePanel({}: GamePanelProps) {
   const [rewardMessage, setRewardMessage] = useState("");
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    startNewWord();
-    // Cleanup timer on unmount
-    return () => stopTimer();
-  }, []);
-
-  const startNewWord = () => {
+  const startNewWord = useCallback(() => {
     setUserInput("");
     setStatus("");
     setIsCorrect(false);
@@ -42,7 +34,13 @@ export default function GamePanel({}: GamePanelProps) {
     speechSynthesis.cancel();
     speechSynthesis.speak(utterance);
     startTimer();
-  };
+  }, []);
+
+  useEffect(() => {
+    startNewWord();
+    // Cleanup timer on unmount
+    return () => stopTimer();
+  }, [startNewWord]);
 
   const startTimer = () => {
     stopTimer();
