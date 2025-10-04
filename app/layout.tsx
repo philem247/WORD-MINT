@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+"use client";
+
 import { Inter } from "next/font/google";
 import "./globals.css";
 import "@solana/wallet-adapter-react-ui/styles.css";
@@ -7,16 +8,6 @@ import { AuthProvider } from "../lib/auth";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "WordMint",
-  description: "Spell-to-Earn on Solana",
-};
-
-export const viewport = {
-  width: "device-width",
-  initialScale: 1,
-};
-
 export default function RootLayout({
   children,
 }: {
@@ -24,6 +15,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <title>WordMint</title>
+        <meta name="description" content="Spell-to-Earn on Solana" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </head>
       <body className={inter.className}>
         <AuthProvider>
           <WalletContextProvider>{children}</WalletContextProvider>
