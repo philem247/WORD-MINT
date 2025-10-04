@@ -105,6 +105,7 @@ function MainPageContent() {
         >
           {musicMuted ? "🔇 Music Off" : "🔊 Music On"}
         </button>
+
         <button
           className="bg-black/60 text-cyan-200 px-3 py-2 rounded-lg shadow-lg text-xs font-mono hover:bg-cyan-900 transition"
           onClick={playMusic}
@@ -112,5 +113,21 @@ function MainPageContent() {
         >
           🎵 Play Music
         </button>
+
+        {/* ✅ Volume Control (Fixed Section) */}
         <div className="flex items-center gap-2 bg-black/60 px-2 py-1 rounded-lg shadow">
-         </div> 
+          <span className="text-cyan-200 text-xs">Volume</span>
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            value={musicVolume}
+            onChange={(e) => setMusicVolume(Number(e.target.value))}
+            className="accent-cyan-400 h-2 w-24"
+          />
+        </div>
+      </div>
+    </main>
+  );
+}
