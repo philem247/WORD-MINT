@@ -1,24 +1,26 @@
 "use client";
 
-import { FC, ReactNode, useMemo } from "react";
+import { useMemo } from "react";
 import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
-import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import {
   PhantomWalletAdapter,
   SolflareWalletAdapter,
-  CoinbaseWalletAdapter,
-  TorusWalletAdapter
+  AlphaWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
+import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 
-export const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const endpoint = "https://api.devnet.solana.com";
+export function WalletContextProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const endpoint = process.env.NEXT_PUBLIC_SOLANA_RPC || "https://api.devnet.solana.com";
 
   const wallets = useMemo(
     () => [
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter(),
-      new CoinbaseWalletAdapter(),
-      new TorusWalletAdapter()
+      new AlphaWalletAdapter(),
     ],
     []
   );
@@ -30,4 +32,4 @@ export const WalletContextProvider: FC<{ children: ReactNode }> = ({ children })
       </WalletProvider>
     </ConnectionProvider>
   );
-};
+}
