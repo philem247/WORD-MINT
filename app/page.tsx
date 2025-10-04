@@ -7,8 +7,7 @@ import LoginForm from "../components/LoginForm";
 import SignupForm from "../components/SignupForm";
 import PasswordResetForm from "../components/PasswordResetForm";
 import { useState, useRef, useEffect } from "react";
-import { useAuth } from "../lib/auth";
-import { AuthProvider } from "../lib/auth";
+import { useAuth, AuthProvider } from "../lib/auth";
 
 export default function Page() {
   return (
@@ -16,13 +15,33 @@ export default function Page() {
       <MainPageContent />
     </AuthProvider>
   );
-export default function Page() {
+}
+
+function MainPageContent() {
   const { user, profile, loading, signOut } = useAuth();
-  const [authView, setAuthView] = useState<'login' | 'signup' | 'reset'>('login');
+  const [authView, setAuthView] = useState<"login" | "signup" | "reset">("login");
   const [musicMuted, setMusicMuted] = useState(false);
   const [musicVolume, setMusicVolume] = useState(0.5);
-  const [bubbles, setBubbles] = useState<Array<{id: number, width: string, height: string, top: string, left: string, animationDuration: string}>>([]);
-  const [letters, setLetters] = useState<Array<{id: number, letter: string, left: string, top: string, animationDuration: string, animationDelay: string}>>([]);
+  const [bubbles, setBubbles] = useState<
+    Array<{
+      id: number;
+      width: string;
+      height: string;
+      top: string;
+      left: string;
+      animationDuration: string;
+    }>
+  >([]);
+  const [letters, setLetters] = useState<
+    Array<{
+      id: number;
+      letter: string;
+      left: string;
+      top: string;
+      animationDuration: string;
+      animationDelay: string;
+    }>
+  >([]);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
@@ -73,13 +92,11 @@ export default function Page() {
         src="/ANTHEM.mp3"
         loop
         hidden
-        onError={(e) => {
-          console.error("Audio loading error:", e);
-        }}
-        onLoadedData={() => {
-          console.log("Audio loaded successfully");
-        }}
+        onError={(e) => console.error("Audio loading error:", e)}
+        onLoadedData={() => console.log("Audio loaded successfully")}
       />
+
+      {/* Music Controls */}
       <div className="fixed top-4 right-4 z-50 flex flex-col items-end gap-2">
         <button
           className="bg-black/60 text-cyan-200 px-3 py-2 rounded-lg shadow-lg text-xs font-mono hover:bg-cyan-900 transition"
@@ -96,132 +113,3 @@ export default function Page() {
           🎵 Play Music
         </button>
         <div className="flex items-center gap-2 bg-black/60 px-2 py-1 rounded-lg shadow">
-          <span className="text-cyan-200 text-xs">Volume</span>
-          <input
-            type="range"
-            min={0}
-            max={1}
-            step={0.01}
-            value={musicVolume}
-            onChange={e => setMusicVolume(Number(e.target.value))}
-            className="accent-cyan-400 h-2 w-24"
-          />
-        </div>
-      </div>
-      {/* Animated Futuristic Gradient Background */}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-br from-cyan-900 via-black to-indigo-900 animate-gradient-move" />
-
-      {/* Floating Neon Bubbles & Falling Letters */}
-      <div className="absolute inset-0 -z-10 pointer-events-none">
-        {bubbles.map((bubble) => (
-          <div
-            key={"bubble-" + bubble.id}
-            className="absolute rounded-full bg-cyan-400/20 blur-xl animate-bubble"
-            style={{
-              width: bubble.width,
-              height: bubble.height,
-              top: bubble.top,
-              left: bubble.left,
-              animationDuration: bubble.animationDuration,
-            }}
-          />
-        ))}
-        {letters.map((letterData) => (
-          <span
-            key={"letter-" + letterData.id}
-            className="absolute text-3xl font-mono text-cyan-300 text-glow animate-fall-letter select-none pointer-events-none"
-            style={{
-              left: letterData.left,
-              top: letterData.top,
-              animationDuration: letterData.animationDuration,
-              animationDelay: letterData.animationDelay,
-            }}
-          >
-            {letterData.letter}
-          </span>
-        ))}
-      </div>
-
-      {/* Main Game Container */}
-      <div className="w-full max-w-5xl mx-auto px-4 py-10 flex flex-col gap-10 items-center">
-        <h1 className="text-4xl md:text-6xl font-extrabold text-glow mb-4 text-center tracking-tight drop-shadow-lg">WordMint</h1>
-        <p className="text-lg md:text-xl text-cyan-200 mb-8 text-center font-mono">Spell-to-Earn on Solana 🚀</p>
-
-        {loading ? (
-          <div className="text-cyan-200 text-lg">Loading...</div>
-        ) : !user ? (
-          <>
-            {authView === 'login' && (
-              <LoginForm
-                onSwitchToSignup={() => setAuthView('signup')}
-                onSwitchToReset={() => setAuthView('reset')}
-              />
-            )}
-            {authView === 'signup' && (
-              <SignupForm onSwitchToLogin={() => setAuthView('login')} />
-            )}
-            {authView === 'reset' && (
-              <PasswordResetForm onBack={() => setAuthView('login')} />
-            )}
-          </>
-        ) : (
-          <>
-            <div className="flex flex-col items-center gap-4 mb-6">
-              <div className="bg-black/60 px-6 py-3 rounded-lg text-cyan-200">
-                Welcome, <span className="font-bold text-cyan-400">{profile?.username || 'Player'}</span>!
-              </div>
-              <button
-                onClick={signOut}
-                className="text-sm text-cyan-300 underline hover:text-cyan-400 transition"
-              >
-                Sign Out
-              </button>
-            </div>
-
-            <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-              <div className="flex flex-col gap-6">
-                <GamePanel />
-                <UserStatsPanel />
-              </div>
-              <div className="flex flex-col gap-6">
-                <LeaderboardPanel />
-              </div>
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* Bubble & Falling Letter Animation Keyframes */}
-      <style jsx>{`
-        @keyframes bubble {
-          0% { transform: translateY(0); opacity: 0.7; }
-          100% { transform: translateY(-120vh); opacity: 0.2; }
-        }
-        .animate-bubble {
-          animation-name: bubble;
-          animation-timing-function: linear;
-          animation-iteration-count: infinite;
-        }
-        @keyframes gradient-move {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        .animate-gradient-move {
-          background-size: 200% 200%;
-          animation: gradient-move 12s ease-in-out infinite;
-        }
-        @keyframes fall-letter {
-          0% { transform: translateY(0); opacity: 0.8; }
-          80% { opacity: 0.7; }
-          100% { transform: translateY(110vh); opacity: 0.1; }
-        }
-        .animate-fall-letter {
-          animation-name: fall-letter;
-          animation-timing-function: linear;
-          animation-iteration-count: infinite;
-        }
-      `}</style>
-    </main>
-  );
-}
