@@ -11,10 +11,7 @@ import { useAuth, AuthProvider } from "../lib/auth";
 
 export default function Page() {
   return (
-    <AuthProvider>
-      <MainPageContent />
-    </AuthProvider>
-  );
+      <MainPageContent />;
 }
 
 function MainPageContent() {
