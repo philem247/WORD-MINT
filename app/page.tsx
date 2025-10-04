@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import GamePanel from "../components/GamePanel";
 import LeaderboardPanel from "../components/LeaderboardPanel";
