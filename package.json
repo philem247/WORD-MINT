@@ -28,4 +28,7 @@
     "tailwindcss": "^4.1.13",
     "typescript": "^5"
   }
+  "resolutions": {
+  "next": "latest"
+  }
 }
