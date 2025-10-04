@@ -8,7 +8,14 @@ import SignupForm from "../components/SignupForm";
 import PasswordResetForm from "../components/PasswordResetForm";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../lib/auth";
+import { AuthProvider } from "../lib/auth";
 
+export default function Page() {
+  return (
+    <AuthProvider>
+      <MainPageContent />
+    </AuthProvider>
+  );
 export default function Page() {
   const { user, profile, loading, signOut } = useAuth();
   const [authView, setAuthView] = useState<'login' | 'signup' | 'reset'>('login');
