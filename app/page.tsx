@@ -1,5 +1,3 @@
-"use client";
-
 import GamePanel from "../components/GamePanel";
 import LeaderboardPanel from "../components/LeaderboardPanel";
 import UserStatsPanel from "../components/UserStatsPanel";
