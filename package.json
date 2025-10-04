@@ -28,8 +28,4 @@
     "tailwindcss": "^4.1.13",
     "typescript": "^5"
   }
-  "scripts": {
-  "start": "nodemon server.js",
-  "test": "winpty node --experimental-vm-modules --disable-warning=ExperimentalWarning node_modules/jest/bin/jest.js"
-}
 }
