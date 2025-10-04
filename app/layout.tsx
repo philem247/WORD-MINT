@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import "@solana/wallet-adapter-react-ui/styles.css";
 import { WalletContextProvider } from "../components/WalletContextProvider";
+import { AuthProvider } from "../lib/auth";
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const inter = Inter({ subsets: ["latin"] });
@@ -21,7 +22,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <WalletContextProvider>{children}</WalletContextProvider>
+        <AuthProvider>
+          <WalletContextProvider>{children}</WalletContextProvider>
+        </AuthProvider>
         <SpeedInsights />
       </body>
     </html>

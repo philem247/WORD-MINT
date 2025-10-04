@@ -2,12 +2,17 @@
 
 import GamePanel from "../components/GamePanel";
 import LeaderboardPanel from "../components/LeaderboardPanel";
+import LoginForm from "../components/LoginForm";
+import SignupForm from "../components/SignupForm";
 import { useState, useRef, useEffect } from "react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { useAuth } from "../lib/auth";
 
 export default function Page() {
   const { publicKey, disconnect } = useWallet();
+  const { user, profile, loading, signOut } = useAuth();
+  const [showSignup, setShowSignup] = useState(false);
   const [musicMuted, setMusicMuted] = useState(false);
   const [musicVolume, setMusicVolume] = useState(0.5);
   const [bubbles, setBubbles] = useState<Array<{id: number, width: string, height: string, top: string, left: string, animationDuration: string}>>([]);
@@ -135,29 +140,56 @@ export default function Page() {
       <div className="w-full max-w-5xl mx-auto px-4 py-10 flex flex-col gap-10 items-center">
         <h1 className="text-4xl md:text-6xl font-extrabold text-glow mb-4 text-center tracking-tight drop-shadow-lg">WordMint</h1>
         <p className="text-lg md:text-xl text-cyan-200 mb-8 text-center font-mono">Spell-to-Earn on Solana 🚀</p>
-        <div className="mb-6 flex flex-col items-center gap-2">
-          <WalletMultiButton />
-          {publicKey && (
-            <div className="flex flex-col items-center gap-1">
-              <div className="text-xs text-cyan-300 bg-black/40 px-3 py-1 rounded-lg">
-                Connected: {publicKey.toBase58().slice(0, 4)}...{publicKey.toBase58().slice(-4)}
-              </div>
-              <button
-                className="text-xs text-cyan-300 underline hover:text-cyan-400 transition"
-                onClick={() => disconnect()}
-              >Disconnect</button>
-            </div>
-          )}
-        </div>
-        {publicKey ? (
+
+        {loading ? (
+          <div className="text-cyan-200 text-lg">Loading...</div>
+        ) : !user ? (
           <>
-            <GamePanel />
-            <LeaderboardPanel />
+            {showSignup ? (
+              <SignupForm onSwitchToLogin={() => setShowSignup(false)} />
+            ) : (
+              <LoginForm onSwitchToSignup={() => setShowSignup(true)} />
+            )}
           </>
         ) : (
-          <div className="bg-black/60 rounded-xl p-8 text-center text-cyan-200 text-lg shadow-lg">
-            Please connect your wallet to play the game.
-          </div>
+          <>
+            <div className="flex flex-col items-center gap-4 mb-6">
+              <div className="bg-black/60 px-6 py-3 rounded-lg text-cyan-200">
+                Welcome, <span className="font-bold text-cyan-400">{profile?.username || 'Player'}</span>!
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <WalletMultiButton />
+                {publicKey && (
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="text-xs text-cyan-300 bg-black/40 px-3 py-1 rounded-lg">
+                      Connected: {publicKey.toBase58().slice(0, 4)}...{publicKey.toBase58().slice(-4)}
+                    </div>
+                    <button
+                      className="text-xs text-cyan-300 underline hover:text-cyan-400 transition"
+                      onClick={() => disconnect()}
+                    >Disconnect Wallet</button>
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={signOut}
+                className="text-sm text-cyan-300 underline hover:text-cyan-400 transition"
+              >
+                Sign Out
+              </button>
+            </div>
+
+            {publicKey ? (
+              <>
+                <GamePanel />
+                <LeaderboardPanel />
+              </>
+            ) : (
+              <div className="bg-black/60 rounded-xl p-8 text-center text-cyan-200 text-lg shadow-lg">
+                Please connect your wallet to play the game.
+              </div>
+            )}
+          </>
         )}
       </div>
 
