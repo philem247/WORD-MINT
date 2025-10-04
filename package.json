@@ -3,14 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build --turbopack",
-    "start": "next start",
-    "lint": "eslint"
+    "dev": "NODE_NO_WARNINGS=1 next dev"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.58.0",
-    "next": "15.5.3",
+    "next": "^15.5.4",
     "react": "19.1.0",
     "react-confetti": "^6.4.0",
     "react-dom": "19.1.0"
@@ -29,9 +26,6 @@
     "typescript": "^5"
   },
   "resolutions": {
-  "next": "latest"
-  },
-  "scripts": {
-  "dev": "NODE_NO_WARNINGS=1 next dev"
+    "next": "latest"
   }
 }
