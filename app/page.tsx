@@ -2,6 +2,7 @@
 
 import GamePanel from "../components/GamePanel";
 import LeaderboardPanel from "../components/LeaderboardPanel";
+import UserStatsPanel from "../components/UserStatsPanel";
 import LoginForm from "../components/LoginForm";
 import SignupForm from "../components/SignupForm";
 import PasswordResetForm from "../components/PasswordResetForm";
@@ -187,16 +188,21 @@ export default function Page() {
               </button>
             </div>
 
-            {publicKey ? (
-              <>
-                <GamePanel />
-                <LeaderboardPanel />
-              </>
-            ) : (
-              <div className="bg-black/60 rounded-xl p-8 text-center text-cyan-200 text-lg shadow-lg">
-                Please connect your wallet to play the game.
+            <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+              <div className="flex flex-col gap-6">
+                {publicKey ? (
+                  <GamePanel />
+                ) : (
+                  <div className="bg-black/60 rounded-xl p-8 text-center text-cyan-200 text-lg shadow-lg">
+                    Connect your wallet to play the game and earn rewards.
+                  </div>
+                )}
+                <UserStatsPanel />
               </div>
-            )}
+              <div className="flex flex-col gap-6">
+                <LeaderboardPanel />
+              </div>
+            </div>
           </>
         )}
       </div>
