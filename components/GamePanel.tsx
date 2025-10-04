@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useAuth } from "../lib/auth";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../lib/supabase-client";
 import WORD_BANK from "../data/words.json";
 import Confetti from "react-confetti";
 
