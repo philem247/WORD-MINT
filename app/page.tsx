@@ -4,6 +4,7 @@ import GamePanel from "../components/GamePanel";
 import LeaderboardPanel from "../components/LeaderboardPanel";
 import LoginForm from "../components/LoginForm";
 import SignupForm from "../components/SignupForm";
+import PasswordResetForm from "../components/PasswordResetForm";
 import { useState, useRef, useEffect } from "react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -12,7 +13,7 @@ import { useAuth } from "../lib/auth";
 export default function Page() {
   const { publicKey, disconnect } = useWallet();
   const { user, profile, loading, signOut } = useAuth();
-  const [showSignup, setShowSignup] = useState(false);
+  const [authView, setAuthView] = useState<'login' | 'signup' | 'reset'>('login');
   const [musicMuted, setMusicMuted] = useState(false);
   const [musicVolume, setMusicVolume] = useState(0.5);
   const [bubbles, setBubbles] = useState<Array<{id: number, width: string, height: string, top: string, left: string, animationDuration: string}>>([]);
@@ -145,10 +146,17 @@ export default function Page() {
           <div className="text-cyan-200 text-lg">Loading...</div>
         ) : !user ? (
           <>
-            {showSignup ? (
-              <SignupForm onSwitchToLogin={() => setShowSignup(false)} />
-            ) : (
-              <LoginForm onSwitchToSignup={() => setShowSignup(true)} />
+            {authView === 'login' && (
+              <LoginForm
+                onSwitchToSignup={() => setAuthView('signup')}
+                onSwitchToReset={() => setAuthView('reset')}
+              />
+            )}
+            {authView === 'signup' && (
+              <SignupForm onSwitchToLogin={() => setAuthView('login')} />
+            )}
+            {authView === 'reset' && (
+              <PasswordResetForm onBack={() => setAuthView('login')} />
             )}
           </>
         ) : (
