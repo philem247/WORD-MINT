@@ -10,8 +10,7 @@ import { useState, useRef, useEffect } from "react";
 import { useAuth, AuthProvider } from "../lib/auth";
 
 export default function Page() {
-  return (
-      <MainPageContent />;
+  return <MainPageContent />;
 }
 
 function MainPageContent() {
