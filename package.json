@@ -30,5 +30,8 @@
   },
   "resolutions": {
   "next": "latest"
+  },
+  "scripts": {
+  "dev": "NODE_NO_WARNINGS=1 next dev"
   }
 }
