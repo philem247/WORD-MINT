@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { mintRewardToWallet } from "../lib/solana";
+import { useAuth } from "../lib/auth";
+import { supabase } from "../lib/supabase";
 import WORD_BANK from "../data/words.json";
 import Confetti from "react-confetti";
 
@@ -10,6 +11,7 @@ type GamePanelProps = Record<string, never>;
 
 export default function GamePanel({}: GamePanelProps) {
   const { publicKey } = useWallet();
+  const { user } = useAuth();
   const [currentWord, setCurrentWord] = useState("");
   const [userInput, setUserInput] = useState("");
   const [status, setStatus] = useState("");
@@ -19,6 +21,9 @@ export default function GamePanel({}: GamePanelProps) {
   const [timer, setTimer] = useState(30);
   const [isClaimingReward, setIsClaimingReward] = useState(false);
   const [rewardMessage, setRewardMessage] = useState("");
+  const [totalWords, setTotalWords] = useState(0);
+  const [correctWords, setCorrectWords] = useState(0);
+  const [gameStartTime, setGameStartTime] = useState(Date.now());
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const startNewWord = useCallback(() => {
@@ -27,6 +32,7 @@ export default function GamePanel({}: GamePanelProps) {
     setIsCorrect(false);
     setNewWordAllowed(false);
     setTimer(30);
+    setGameStartTime(Date.now());
     const randomWord = WORD_BANK[Math.floor(Math.random() * WORD_BANK.length)];
     setCurrentWord(randomWord);
     // TTS
@@ -95,34 +101,81 @@ export default function GamePanel({}: GamePanelProps) {
     }
   };
 
+  const saveGameSession = async (finalScore: number) => {
+    if (!user) return;
+
+    const duration = Math.floor((Date.now() - gameStartTime) / 1000);
+    const accuracy = totalWords > 0 ? (correctWords / totalWords) * 100 : 0;
+
+    const { error: sessionError } = await supabase
+      .from('game_sessions')
+      .insert({
+        user_id: user.id,
+        score: finalScore,
+        words_completed: totalWords,
+        accuracy: accuracy,
+        duration_seconds: duration
+      });
+
+    if (sessionError) {
+      console.error('Error saving game session:', sessionError);
+      return;
+    }
+
+    const { data: stats } = await supabase
+      .from('user_stats')
+      .select('*')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    const newBestScore = Math.max(stats?.best_score || 0, finalScore);
+    const newBestStreak = Math.max(stats?.best_streak || 0, finalScore);
+    const newTotalGames = (stats?.total_games || 0) + 1;
+    const newTotalWords = (stats?.total_words || 0) + totalWords;
+    const newAvgAccuracy = stats ?
+      ((stats.average_accuracy * stats.total_games) + accuracy) / newTotalGames :
+      accuracy;
+
+    await supabase
+      .from('user_stats')
+      .upsert({
+        user_id: user.id,
+        total_games: newTotalGames,
+        best_score: newBestScore,
+        best_streak: newBestStreak,
+        total_words: newTotalWords,
+        average_accuracy: newAvgAccuracy,
+        updated_at: new Date().toISOString()
+      });
+  };
+
   const checkAnswer = () => {
     stopTimer();
-    if (userInput.trim().toLowerCase() === currentWord.toLowerCase()) {
+    const isAnswerCorrect = userInput.trim().toLowerCase() === currentWord.toLowerCase();
+    const newTotal = totalWords + 1;
+    setTotalWords(newTotal);
+
+    if (isAnswerCorrect) {
       setStatus(`✅ Correct! The word was "${currentWord}".`);
       setIsCorrect(true);
       const newStreak = streak + 1;
+      const newCorrect = correctWords + 1;
       setStreak(newStreak);
+      setCorrectWords(newCorrect);
       playSound("correct");
-      // Update leaderboard via API
-      if (publicKey) {
-        fetch("/api/leaderboard", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ wallet: publicKey.toBase58(), score: newStreak })
-        });
+
+      if (user) {
+        saveGameSession(newStreak);
       }
     } else {
       setStatus(`❌ Wrong! The word was "${currentWord}".`);
       setIsCorrect(false);
+      const finalScore = streak;
       setStreak(0);
       playSound("incorrect");
-      // Optionally, update leaderboard with zero score
-      if (publicKey) {
-        fetch("/api/leaderboard", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ wallet: publicKey.toBase58(), score: 0 })
-        });
+
+      if (user && finalScore > 0) {
+        saveGameSession(finalScore);
       }
     }
     setNewWordAllowed(true);
@@ -164,13 +217,13 @@ export default function GamePanel({}: GamePanelProps) {
         value={userInput}
         onChange={(e) => setUserInput(e.target.value)}
         placeholder="Type the word"
-        disabled={timer === 0 || !publicKey}
+        disabled={timer === 0 || !user}
         className={`w-full px-4 py-2 mb-4 rounded-lg text-cyan-300 text-glow bg-black/60 border-2 border-cyan-400 focus:border-cyan-300 focus:ring-2 focus:ring-cyan-400 outline-none transition-all duration-200 shadow-[0_0_12px_#00f0ff80] animate-pulse`}
       />
       <div className="flex justify-center gap-4 mb-4">
         <button
           onClick={checkAnswer}
-          disabled={timer === 0 || !publicKey}
+          disabled={timer === 0 || !user}
           className="btn-glow px-6 py-2 text-lg"
         >
           ✅ Submit
@@ -191,9 +244,14 @@ export default function GamePanel({}: GamePanelProps) {
         </span>
       </div>
       <div className="mt-4 text-lg md:text-xl">{status}</div>
-      {!publicKey && (
+      {!user && (
         <div className="mt-4 text-sm text-yellow-300 bg-yellow-900/20 p-3 rounded-lg border border-yellow-500/30">
-          ⚠️ Connect your wallet to claim $WORD rewards and compete on the leaderboard!
+          ⚠️ Log in to save your progress and compete on the leaderboard!
+        </div>
+      )}
+      {user && !publicKey && (
+        <div className="mt-4 text-sm text-yellow-300 bg-yellow-900/20 p-3 rounded-lg border border-yellow-500/30">
+          ⚠️ Connect your wallet to claim $WORD rewards!
         </div>
       )}
       {isCorrect && (
