@@ -1,27 +1,19 @@
-export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
-
-import { Inter } from "next/font/google";
+import type { Metadata } from "next";
 import "./globals.css";
-import { Providers } from "./providers";
 
-const inter = Inter({ subsets: ["latin"] });
+export const metadata: Metadata = {
+  title: "WordMint - Spelling Game",
+  description: "Listen, type, and win!",
+};
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html lang="en">
-      <head>
-        <title>WordMint</title>
-        <meta name="description" content="Spell-to-Earn on Solana" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </head>
-      <body className={inter.className}>
-        <Providers>{children}</Providers>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

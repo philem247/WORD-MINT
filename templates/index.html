@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordMint - Spelling Game</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div id="app">
+        <audio id="bgMusic" src="/static/ANTHEM.mp3" loop></audio>
+
+        <div class="music-controls">
+            <button id="muteBtn" class="control-btn">🔊 Music On</button>
+            <button id="playMusicBtn" class="control-btn">🎵 Play Music</button>
+            <div class="volume-control">
+                <span>Volume</span>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
+            </div>
+        </div>
+
+        <div class="background">
+            <div id="bubbles"></div>
+            <div id="letters"></div>
+        </div>
+
+        <main class="main-content">
+            <div id="authSection" class="auth-container">
+                <h1 class="title">🎯 WordMint</h1>
+                <p class="subtitle">Listen, Type, Win!</p>
+
+                <div id="loginForm" class="auth-form">
+                    <h2>Login</h2>
+                    <input type="email" id="loginEmail" placeholder="Email" class="input-field">
+                    <input type="password" id="loginPassword" placeholder="Password" class="input-field">
+                    <button id="loginBtn" class="btn-primary">Login</button>
+                    <div class="auth-links">
+                        <a href="#" id="showSignup">Create account</a> |
+                        <a href="#" id="showReset">Forgot password?</a>
+                    </div>
+                </div>
+
+                <div id="signupForm" class="auth-form" style="display: none;">
+                    <h2>Sign Up</h2>
+                    <input type="text" id="signupUsername" placeholder="Username" class="input-field">
+                    <input type="email" id="signupEmail" placeholder="Email" class="input-field">
+                    <input type="password" id="signupPassword" placeholder="Password" class="input-field">
+                    <button id="signupBtn" class="btn-primary">Sign Up</button>
+                    <div class="auth-links">
+                        <a href="#" id="backToLogin">Back to login</a>
+                    </div>
+                </div>
+
+                <div id="resetForm" class="auth-form" style="display: none;">
+                    <h2>Reset Password</h2>
+                    <input type="email" id="resetEmail" placeholder="Email" class="input-field">
+                    <button id="resetBtn" class="btn-primary">Send Reset Link</button>
+                    <div class="auth-links">
+                        <a href="#" id="backToLoginFromReset">Back to login</a>
+                    </div>
+                </div>
+
+                <div id="message" class="message"></div>
+            </div>
+
+            <div id="gameSection" style="display: none;">
+                <div class="game-header">
+                    <h1 class="title">🎯 WordMint</h1>
+                    <button id="logoutBtn" class="btn-secondary">Logout</button>
+                </div>
+
+                <div class="game-panel">
+                    <p class="game-instruction">🎧 Listen carefully and type the word you hear:</p>
+
+                    <div class="timer-section">
+                        <div class="timer-label">⏱ Time Left: <span id="timer">30</span>s</div>
+                        <div class="progress-bar">
+                            <div id="progressBar" class="progress-fill"></div>
+                        </div>
+                    </div>
+
+                    <div class="game-controls">
+                        <button id="newWordBtn" class="btn-primary" disabled>⏳ Submit first</button>
+                        <button id="replayBtn" class="btn-secondary">🔁 Replay</button>
+                    </div>
+
+                    <input type="text" id="userInput" placeholder="Type the word" class="input-field game-input">
+
+                    <div class="game-actions">
+                        <button id="submitBtn" class="btn-primary">✅ Submit</button>
+                        <button id="clearBtn" class="btn-secondary">🧹 Clear</button>
+                    </div>
+
+                    <div class="streak-display">
+                        🔥 Streak: <span id="streak">0</span>
+                    </div>
+
+                    <div id="status" class="status-message"></div>
+                </div>
+
+                <div class="stats-section">
+                    <div class="panel">
+                        <h2>📊 Your Stats</h2>
+                        <div id="userStats">Loading...</div>
+                    </div>
+
+                    <div class="panel">
+                        <h2>🏆 Leaderboard</h2>
+                        <div id="leaderboard">Loading...</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <canvas id="confetti" style="position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999;"></canvas>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
