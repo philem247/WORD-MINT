@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useWallet } from "@solana/wallet-adapter-react";
 import { useAuth } from "../lib/auth";
 import { supabase } from "../lib/supabase";
 import WORD_BANK from "../data/words.json";
@@ -10,7 +9,6 @@ import Confetti from "react-confetti";
 type GamePanelProps = Record<string, never>;
 
 export default function GamePanel({}: GamePanelProps) {
-  const { publicKey } = useWallet();
   const { user } = useAuth();
   const [currentWord, setCurrentWord] = useState("");
   const [userInput, setUserInput] = useState("");
@@ -19,8 +17,6 @@ export default function GamePanel({}: GamePanelProps) {
   const [newWordAllowed, setNewWordAllowed] = useState(false);
   const [streak, setStreak] = useState(0);
   const [timer, setTimer] = useState(30);
-  const [isClaimingReward, setIsClaimingReward] = useState(false);
-  const [rewardMessage, setRewardMessage] = useState("");
   const [totalWords, setTotalWords] = useState(0);
   const [correctWords, setCorrectWords] = useState(0);
   const [gameStartTime, setGameStartTime] = useState(Date.now());
@@ -82,24 +78,6 @@ export default function GamePanel({}: GamePanelProps) {
     audio.play();
   };
 
-  const claimReward = async () => {
-    if (!publicKey) {
-      setRewardMessage("❌ Wallet not connected!");
-      return;
-    }
-
-    setIsClaimingReward(true);
-    setRewardMessage("⏳ Processing...");
-
-    try {
-      // Show coming soon message instead of minting
-      setRewardMessage("🚀 $WORD token is coming soon! Stay tuned for updates.");
-    } catch (error) {
-      setRewardMessage("❌ Something went wrong. Please try again later.");
-    } finally {
-      setIsClaimingReward(false);
-    }
-  };
 
   const saveGameSession = async (finalScore: number) => {
     if (!user) return;
@@ -247,27 +225,6 @@ export default function GamePanel({}: GamePanelProps) {
       {!user && (
         <div className="mt-4 text-sm text-yellow-300 bg-yellow-900/20 p-3 rounded-lg border border-yellow-500/30">
           ⚠️ Log in to save your progress and compete on the leaderboard!
-        </div>
-      )}
-      {user && !publicKey && (
-        <div className="mt-4 text-sm text-yellow-300 bg-yellow-900/20 p-3 rounded-lg border border-yellow-500/30">
-          ⚠️ Connect your wallet to claim $WORD rewards!
-        </div>
-      )}
-      {isCorrect && (
-        <div className="mt-6 space-y-3">
-          <button
-            onClick={claimReward}
-            disabled={isClaimingReward}
-            className={`btn-glow px-6 py-2 text-lg ${isClaimingReward ? "opacity-50 cursor-not-allowed" : ""}`}
-          >
-            {isClaimingReward ? "⏳ Claiming..." : "🎁 Claim 1 $WORD"}
-          </button>
-          {rewardMessage && (
-            <div className="text-sm text-cyan-300 bg-black/40 p-3 rounded-lg">
-              {rewardMessage}
-            </div>
-          )}
         </div>
       )}
         <style jsx>{`

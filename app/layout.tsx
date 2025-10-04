@@ -2,8 +2,6 @@
 
 import { Inter } from "next/font/google";
 import "./globals.css";
-import "@solana/wallet-adapter-react-ui/styles.css";
-import { WalletContextProvider } from "../components/WalletContextProvider";
 import { AuthProvider } from "../lib/auth";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -22,7 +20,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <AuthProvider>
-          <WalletContextProvider>{children}</WalletContextProvider>
+          {children}
         </AuthProvider>
       </body>
     </html>

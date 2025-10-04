@@ -7,12 +7,9 @@ import LoginForm from "../components/LoginForm";
 import SignupForm from "../components/SignupForm";
 import PasswordResetForm from "../components/PasswordResetForm";
 import { useState, useRef, useEffect } from "react";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { useWallet } from "@solana/wallet-adapter-react";
 import { useAuth } from "../lib/auth";
 
 export default function Page() {
-  const { publicKey, disconnect } = useWallet();
   const { user, profile, loading, signOut } = useAuth();
   const [authView, setAuthView] = useState<'login' | 'signup' | 'reset'>('login');
   const [musicMuted, setMusicMuted] = useState(false);
@@ -166,20 +163,6 @@ export default function Page() {
               <div className="bg-black/60 px-6 py-3 rounded-lg text-cyan-200">
                 Welcome, <span className="font-bold text-cyan-400">{profile?.username || 'Player'}</span>!
               </div>
-              <div className="flex flex-col items-center gap-2">
-                <WalletMultiButton />
-                {publicKey && (
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="text-xs text-cyan-300 bg-black/40 px-3 py-1 rounded-lg">
-                      Connected: {publicKey.toBase58().slice(0, 4)}...{publicKey.toBase58().slice(-4)}
-                    </div>
-                    <button
-                      className="text-xs text-cyan-300 underline hover:text-cyan-400 transition"
-                      onClick={() => disconnect()}
-                    >Disconnect Wallet</button>
-                  </div>
-                )}
-              </div>
               <button
                 onClick={signOut}
                 className="text-sm text-cyan-300 underline hover:text-cyan-400 transition"
@@ -190,13 +173,7 @@ export default function Page() {
 
             <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
               <div className="flex flex-col gap-6">
-                {publicKey ? (
-                  <GamePanel />
-                ) : (
-                  <div className="bg-black/60 rounded-xl p-8 text-center text-cyan-200 text-lg shadow-lg">
-                    Connect your wallet to play the game and earn rewards.
-                  </div>
-                )}
+                <GamePanel />
                 <UserStatsPanel />
               </div>
               <div className="flex flex-col gap-6">
