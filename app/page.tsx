@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = "force-dynamic";
+
 import GamePanel from "../components/GamePanel";
 import LeaderboardPanel from "../components/LeaderboardPanel";
 import UserStatsPanel from "../components/UserStatsPanel";
