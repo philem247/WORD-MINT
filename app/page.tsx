@@ -112,4 +112,5 @@ function MainPageContent() {
         >
           🎵 Play Music
         </button>
-        </div className="flex items-center gap-2 bg-black/60 px-2 py-1 rounded-lg shadow">
+        <div className="flex items-center gap-2 bg-black/60 px-2 py-1 rounded-lg shadow">
+         </div> 
